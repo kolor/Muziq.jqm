@@ -1,0 +1,37 @@
+[data-role=header] a {font-size: 22px !important;}
+
+h4 {margin: 10px 0;}
+.ui-listview {margin-top: 10px !important;}
+ul.list a.ui-btn {font-size: 14px !important;}
+
+#artist-search {display: none; padding: 5px; border: 1px solid #ddd; border-radius: 3px; overflow: hidden; box-shadow: inset 0 0px 4px #ccc;}
+#artist-search .artist {float: left; width: 31%; height: 96px; background-position:50% 50%; 
+	background-repeat:no-repeat; background-size: cover; position: relative; overflow: hidden; 
+	cursor: pointer; border: 1px solid #aaa; margin-top: 4px; margin-left: 3px; opacity: 0.8;}
+#artist-search .artist:active {opacity: 1;}
+#artist-search .artist .info {background:rgba(255, 255, 255, 0.8); color:#333333; font-size:10px; width:100%;
+	font-weight:bold; padding:5px; position:absolute; bottom: 0; text-align:center; text-shadow:0 0 1px #bbb; }
+
+#similar .list {padding: 5px; border: 1px solid #ddd; border-radius: 3px; overflow: hidden; box-shadow: inset 0 0px 4px #ccc;}
+#similar .similar {float: left; width: 31%; height: 96px; background-position:50% 50%; 
+	background-repeat:no-repeat; background-size: cover; position: relative; overflow: hidden; 
+	cursor: pointer; border: 1px solid #aaa; margin-top: 5px; margin-left: 3px; opacity: 0.8;}
+#similar .similar:active {opacity: 1;}
+#similar .similar .info {background:rgba(255, 255, 255, 0.8); color:#333333; font-size:10px; width:100%;
+	font-weight:bold; padding:5px; position:absolute; bottom: 0; text-align:center; text-shadow:0 0 1px #bbb; }
+
+
+.ubaplayer-controls li {display: inline; list-style: none;}
+
+#player .controls {background: #444; overflow: hidden;}
+#player .controls div {border: 2px solid #202020; background-color: white; border-radius: 3px; width: 35px; height: 35px;  margin: 10px;}
+#player .controls div:active {background-color: rgb(128, 168, 190);}
+#player .play, 
+#player .pause {float: left; background-position: -5px -5px;}
+
+#player .play {background-image: url(../img/play.png); }
+#player .pause {background-image: url(../img/pause.png); background-position-x: -7px; }
+#player .next {background-image: url(../img/next.png); float: right; background-position: -6px -6px;}
+
+
+#player li.playing a {background-color: #ddd !important;}

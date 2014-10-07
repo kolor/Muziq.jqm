@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+    <title>uMuziq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="libs/jquery.js"></script>
+    <script src="libs/php.js"></script>
+    <script src="libs/player.js"></script>
+    <script src="libs/mobile/jquery.mobile.js"></script>
+    <link  href="libs/mobile/jquery.mobile.css" rel="stylesheet">
+    <script src="//vkontakte.ru/js/api/openapi.js"></script>
+    
+    <link  href="css/helpers.css" rel="stylesheet">
+    <link  href="css/main.css" rel="stylesheet">
+
+    <script src="js/Muziq.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/init.js"></script>
+</head>
+<body>
+
+<!-- player -->
+<div class="hide">
+    <div id="uplayer"></div>
+    <ul class="ubaplayer-controls">
+        <li><a class="ubaplayer-button"  id="player-source"></a></li>
+    </ul>
+</div>
+
+    <div data-role="page" id="home">
+	 	<div data-role="panel" id="playlist" data-position="left" data-theme="b"> 
+	    	<h4>Playlist</h4>
+	    	<ul data-role="listview" class="tracks">
+	    	   <li><a href="#">Spor - Aztec</a></li>
+	    	   <li><a href="#">The Upbeats - Mammoth</a></li>
+	    	   <li><a href="#">Tech Itch - The Rukus</a></li>
+	    	 </ul>
+		</div>
+
+		<div data-role="panel" id="settings" data-position="right" data-theme="b">
+			<h4>Settings</h4>
+
+		</div>
+
+        <div data-role="header" data-theme="b" class="ui-bar" data-id="head">
+            <a href="#playlist" data-role="button" data-inline="true" data-icon="bars" data-iconpos="notext" data-theme="c" role="button" data-shadow="true" data-corners="true"></a>
+            <h2>Muziq Mobile</h2>
+            <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext" data-theme="c" role="button" class="ui-shadow ui-corner-all"></a>
+        </div><!-- /header -->
+ 
+        <div data-role="content">
+            <h4>Start searching for music..</h4>
+            <input type="search" name="search" id="search" placeholder="artist name" />
+            <div id="artist-search"></div>
+        </div><!-- /content -->
+ 
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-id="menu" data-theme="b">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#home"  data-icon="home" class="ui-btn-active ui-state-persist"></a>
+                    <li><a href="#similar" data-icon="user"></a>
+                    <li><a href="#albums" data-icon="bullets"></a>
+                    <li><a href="#player" data-icon="audio"></a>
+                    <li><a href="#lists" data-icon="heart"></a>
+                </ul>
+            </div>
+        </div><!-- /footer -->
+ 
+    </div><!-- /page -->
+
+
+    <div data-role="page" id="similar">
+
+    <!-- panel goes here -->
+
+        <div data-role="header" data-theme="b" class="ui-bar" data-id="head">
+            <a href="#playlist" data-role="button" data-inline="true" data-icon="bars" data-iconpos="notext" data-theme="c" role="button" data-shadow="true" data-corners="true"></a>
+            <h4>Similar to <span id="similar-for"></span></h4>
+            <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext" data-theme="c" role="button" class="ui-shadow ui-corner-all"></a>
+        </div><!-- /header -->
+ 
+        <div data-role="content">
+            <div class="list"></div>
+        </div><!-- /content -->
+ 
+        <div data-role="footer" data-position="fixed" data-id="menu" data-theme="b" data-tap-toggle="false" >
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#home"  data-icon="home"></a>
+                    <li><a href="#similar" data-icon="user" class="ui-btn-active ui-state-persist"></a>
+                    <li><a href="#albums" data-icon="bullets"></a>
+                    <li><a href="#player" data-icon="audio"></a>
+                    <li><a href="#lists" data-icon="heart"></a>
+                </ul>
+            </div>
+        </div><!-- /footer -->
+ 
+    </div><!-- /page -->
+
+
+
+    <div data-role="page" id="albums">
+
+    <!-- panel goes here -->
+
+
+        <div data-role="header" data-theme="b" class="ui-bar" data-id="head">
+            <a href="#playlist" data-role="button" data-inline="true" data-icon="bars" data-iconpos="notext" data-theme="c" role="button" data-shadow="true" data-corners="true"></a>
+            <h2><span id="albums-for"></span> Albums</h2>
+            <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext" data-theme="c" role="button" class="ui-shadow ui-corner-all"></a>
+        </div><!-- /header -->
+    
+        <div data-role="content">
+            <ul class="list" data-role="listview"></ul>
+        </div><!-- /content -->
+    
+        <div data-role="footer" data-position="fixed" data-id="menu" data-theme="b" data-tap-toggle="false" >
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#home"  data-icon="home"></a>
+                    <li><a href="#similar" data-icon="user"></a>
+                    <li><a href="#albums" data-icon="bullets" class="ui-btn-active ui-state-persist"></a>
+                    <li><a href="#player" data-icon="audio" ></a>
+                    <li><a href="#lists" data-icon="heart"></a>
+                </ul>
+            </div>
+        </div><!-- /footer -->
+    
+    </div><!-- /page -->
+
+
+    <div data-role="page" id="player">
+
+    <!-- panel goes here -->
+
+
+        <div data-role="header" data-theme="b" class="ui-bar" data-id="head">
+            <a href="#playlist" data-role="button" data-inline="true" data-icon="bars" data-iconpos="notext" data-theme="c" role="button" data-shadow="true" data-corners="true"></a>
+            <h2><span id="tracks-of"></span> Tracks</h2>
+            <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext" data-theme="c" role="button" class="ui-shadow ui-corner-all"></a>
+        </div><!-- /header -->
+    
+
+        <div data-position="fixed" class="controls">
+            <div class="play play-btn"></div>
+            <div class="next"></div>
+        </div>
+
+        <div data-role="content">
+            <h4><span id="tracks-for"></span></h4>
+            <ul class="list" data-role="listview"></ul>
+
+        </div><!-- /content -->
+
+
+
+        <div data-role="footer" data-position="fixed" data-id="menu" data-theme="b" data-tap-toggle="false" >
+
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#home"  data-icon="home"></a>
+                    <li><a href="#similar" data-icon="user"></a>
+                    <li><a href="#albums" data-icon="bullets"   ></a>
+                    <li><a href="#player" data-icon="audio"  class="ui-btn-active ui-state-persist"></a>
+                    <li><a href="#lists" data-icon="heart" ></a>
+                </ul>
+            </div>
+        </div><!-- /footer -->
+    
+    </div><!-- /page -->
+
+
+</body>
+</html>

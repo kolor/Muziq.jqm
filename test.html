@@ -1,0 +1,26 @@
+<head>
+    <title>uMuziq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="libs/jquery.js"></script>
+    <script src="libs/php.js"></script>
+    <script src="libs/player.js"></script>
+
+    <link  href="css/helpers.css" rel="stylesheet">
+    <link  href="css/main.css" rel="stylesheet">
+
+    <script src="js/Muziq.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/init.js"></script>
+</head>
+
+    <div id="uplayer"></div>
+    <ul class="ubaplayer-controls">
+        <li><a  id="player-source" href="http://cs4841.vk.me/u76077945/audios/9ee27ab22862.mp3?">WTF</a></li>
+    </ul>
+
+
+    <script>
+    	$("#uplayer").ubaPlayer({
+	    codecs: [{name:"MP3", codec: 'audio/mpeg;'}]
+	});	
+    	</script>
