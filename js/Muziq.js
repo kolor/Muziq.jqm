@@ -27,14 +27,13 @@ var Muziq = new function() {
 		progress: 0,
 		loaded: false,
 
-		next: function(what) {
-			if (what === "duration") {
-
+		next: function() {
+			if (VKA.current.dur+1 < VKA.duration.length) {
+				VKA.current.dur++;
+			} else {
+				VKA.current.dur = 0;
 			}
-			if (what === "source") {
-
-			}
-			VKA.play();
+			this.play();
 		},
 
 		play: function() {
@@ -89,6 +88,15 @@ var Muziq = new function() {
 				}
 			});
 			$('#player .source').click(function(){
+				//$(this).css('-webkit-transform','rotate(0deg)'); 
+				//$(this).css('transform','rotate(0deg)');
+				$(this).css('border-spacing',0);
+				$(this).animate({borderSpacing: 360 },{
+				    step: function(now,fx) {
+				      $(this).css('-webkit-transform','rotate('+now+'deg)'); 
+				      $(this).css('transform','rotate('+now+'deg)');
+				    }, duration:'slow'
+				},'linear');
 				Player.next();
 			});
 			$('#player .progress .loaded').click(function(e){
@@ -159,12 +167,12 @@ var Muziq = new function() {
 					console.log("VK error occured", r.error);
 					auth = false;
 				}
-				$('#search').fadeIn("slow");
+				$('.ui-input-search').fadeIn("slow");
 			});
 
 			setTimeout(function(){
-				$('#search').fadeIn("slow");
-			}, 4000);
+				$('.ui-input-search').fadeIn("slow");
+			}, 2000);
 
 			$('.track').live('click', function(){
 				if (Player.inited === false) {
@@ -214,6 +222,7 @@ var Muziq = new function() {
 			}
 			$.mobile.loading('hide');
 			VKA.duration = arsort(sort, 'SORT_NUMERIC');
+			VKA.current = {src:0, dur:0};
 			Player.play();
 		},
 		
@@ -248,6 +257,9 @@ var Muziq = new function() {
 		init: function() {
 			$('input#search').keyup(function(event){
 			    if (event.keyCode == '13') {
+			    	if (VKA.auth === false) {
+			    	    VK.Auth.login(null, VK.access.AUDIO);    
+			    	}
 			        var q = $('input#search').val();
 			        if (!empty(q)) {
 			            LastFm.getArtists(q);
@@ -336,11 +348,12 @@ var Muziq = new function() {
 		initSimilar: function() {
 			var s = this;
 			$('#similar .similar').click(function(){
+				s.artist = $(this).attr('data-artist');
+				s.mbid = $(this).attr('data-mbid')
 				$('#albums ul.list').html("<li id='top-tracks'><a>Top Tracks for "+s.artist+"</a></li>");
 				$('#albums #top-tracks').click(function(){
 					LastFm.getTracks(LastFm.mbid, LastFm.artist);
 				});
-				s.artist = $(this).attr('data-artist');
 				Discogs.findArtist(s.artist);
 			});
 			if (Discogs.loaded === false) {
@@ -372,7 +385,6 @@ var Muziq = new function() {
 				}
 			});
 			$('#player ul.list').html(result).listview().listview('refresh');
-			$('#player #tracks-of').text(s.artist);
 			$('#player #tracks-for').text("Top Tracks");
 			$.mobile.changePage('#player');
 			$.mobile.loading('hide');
@@ -395,6 +407,7 @@ var Muziq = new function() {
 		artist: null,
 		artistUrl: null,
 		loaded: false,
+		album: null,
 			
 		findArtist: function(q) {
 			this.loaded = false;
@@ -423,25 +436,32 @@ var Muziq = new function() {
 
 
 		onGetReleases: function(e) {
+			var s = Discogs;
+			s.found = [];
 			var results = '';
 			var data = e.data;
 			data.releases.reverse();
 			$(data.releases).each(function(){
 				if (this.role === "Main") {
+					if (s.found.indexOf(this.title) > -1) {
+						return true;
+					}
+					s.found.push(this.title);
 					var y = "";
 					if (defined(this.year)) {
 						y = "<span class='ui-li-count'>"+this.year+"</span>";
 					}
-					var str =  "<li class='album' data-title='"+ this.title +"' data-year='"+this.year+"'>\
-								<a data-url='"+ this.resource_url +"' data-id='"+ this.id+"' >"
-									+ this.title + y +"</a></li>";                
+					var str =  "<li class='album' data-title='"+ this.title +"' data-year='"+this.year+"'\
+										data-url='"+ this.resource_url +"' data-id='"+ this.id+"' >\
+										<a>"+ this.title + y +"</a></li>";                
 					results += str;
 				}            
 			});
 			
 			$('#albums ul.list').append($(results).sort(Discogs.sortYear)).listview().listview('refresh');;
 			$('#albums #albums-for').text(LastFm.artist);
-			$('#albums .album a').click(function(e){
+			$('#albums .album').click(function(e){
+				Discogs.album = $(this).data('title');
 				var url = $(this).data('url');
 				Discogs.getTracks(url);
 				e.preventDefault();
@@ -459,6 +479,7 @@ var Muziq = new function() {
 		onGetTracks: function(e) {
 			var data = e.data;
 			var results = '';
+			$('#player #tracks-for').text(Discogs.album);
 			$(data.tracklist).each(function(){
 				if (!defined(this.title) || empty(this.title)) {
 					return true;

@@ -4,6 +4,7 @@ $(document).one('ready', function() {
 });
 
 $(document).on('pageinit', '#home', function(e){
+	$('.ui-input-search').hide();
 	Muziq.init("VK");
 	Muziq.init("LastFm");	
 
