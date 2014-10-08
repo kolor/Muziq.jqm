@@ -7,10 +7,11 @@ $(document).on('pageinit', '#home', function(e){
 	Muziq.init("VK");
 	Muziq.init("LastFm");	
 
+
 });
 
 $(document).on('pageinit', '#player', function(e){
-	Muziq.init("Player");
+	//Muziq.init("Player");
 	
 });
 

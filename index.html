@@ -10,6 +10,8 @@
     <link  href="libs/mobile/jquery.mobile.css" rel="stylesheet">
     <script src="//vkontakte.ru/js/api/openapi.js"></script>
     
+    <link href='http://fonts.googleapis.com/css?family=Lobster|Ubuntu+Condensed|Roboto+Condensed:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
     <link  href="css/helpers.css" rel="stylesheet">
     <link  href="css/main.css" rel="stylesheet">
 
@@ -25,6 +27,7 @@
     <ul class="ubaplayer-controls">
         <li><a class="ubaplayer-button"  id="player-source"></a></li>
     </ul>
+
 </div>
 
     <div data-role="page" id="home">
@@ -42,14 +45,14 @@
 
 		</div>
 
-        <div data-role="header" data-theme="b" class="ui-bar" data-id="head">
+        <div data-role="header" data-theme="b" class="ui-bar" data-id="head" data-position="fixed" data-tap-toggle="false">
             <a href="#playlist" data-role="button" data-inline="true" data-icon="bars" data-iconpos="notext" data-theme="c" role="button" data-shadow="true" data-corners="true"></a>
-            <h2>Muziq Mobile</h2>
+            <h3>Muziq Mobile</h3>
             <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext" data-theme="c" role="button" class="ui-shadow ui-corner-all"></a>
         </div><!-- /header -->
  
         <div data-role="content">
-            <h4>Start searching for music..</h4>
+            <h4 class="start">Start searching for music..</h4>
             <input type="search" name="search" id="search" placeholder="artist name" />
             <div id="artist-search"></div>
         </div><!-- /content -->
@@ -73,9 +76,9 @@
 
     <!-- panel goes here -->
 
-        <div data-role="header" data-theme="b" class="ui-bar" data-id="head">
+        <div data-role="header" data-theme="b" class="ui-bar" data-id="head"  data-position="fixed" data-tap-toggle="false">
             <a href="#playlist" data-role="button" data-inline="true" data-icon="bars" data-iconpos="notext" data-theme="c" role="button" data-shadow="true" data-corners="true"></a>
-            <h4>Similar to <span id="similar-for"></span></h4>
+            <h3>Similar to <span id="similar-for"></span></h3>
             <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext" data-theme="c" role="button" class="ui-shadow ui-corner-all"></a>
         </div><!-- /header -->
  
@@ -104,9 +107,9 @@
     <!-- panel goes here -->
 
 
-        <div data-role="header" data-theme="b" class="ui-bar" data-id="head">
+        <div data-role="header" data-theme="b" class="ui-bar" data-id="head"  data-position="fixed" data-tap-toggle="false">
             <a href="#playlist" data-role="button" data-inline="true" data-icon="bars" data-iconpos="notext" data-theme="c" role="button" data-shadow="true" data-corners="true"></a>
-            <h2><span id="albums-for"></span> Albums</h2>
+            <h3><span id="albums-for"></span> Albums</h3>
             <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext" data-theme="c" role="button" class="ui-shadow ui-corner-all"></a>
         </div><!-- /header -->
     
@@ -134,16 +137,24 @@
     <!-- panel goes here -->
 
 
-        <div data-role="header" data-theme="b" class="ui-bar" data-id="head">
+        <div data-role="header" data-theme="b" class="ui-bar" data-id="head"  data-position="fixed" data-tap-toggle="false">
             <a href="#playlist" data-role="button" data-inline="true" data-icon="bars" data-iconpos="notext" data-theme="c" role="button" data-shadow="true" data-corners="true"></a>
-            <h2><span id="tracks-of"></span> Tracks</h2>
+            <h3><span id="tracks-of"></span> Tracks</h3>
             <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext" data-theme="c" role="button" class="ui-shadow ui-corner-all"></a>
         </div><!-- /header -->
     
 
-        <div data-position="fixed" class="controls">
-            <div class="play play-btn"></div>
-            <div class="next"></div>
+        <div data-position="fixed" class="controls hide">
+            <div class="play play-btn btn"></div>
+            <div class="source btn"></div>
+
+            <div class="now-play"><span class="title"></span><span class="time"></span></div>
+            <div class="progress">
+                <div class="loaded">
+                    <div class="seek"></div>
+                </div>
+            </div>
+            
         </div>
 
         <div data-role="content">

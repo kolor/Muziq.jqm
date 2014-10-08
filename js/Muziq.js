@@ -20,7 +20,13 @@ var Muziq = new function() {
 	}
 
 	var Player = {
+		inited: false,
 		elem: null,
+		duration: 0,
+		loading: 0,
+		progress: 0,
+		loaded: false,
+
 		next: function(what) {
 			if (what === "duration") {
 
@@ -32,12 +38,20 @@ var Muziq = new function() {
 		},
 
 		play: function() {
+			Player.duration = 0;
+			Player.loading = 0;
+			Player.progress = 0;
+			Player.loaded = false;
+			$('#player .progress .loaded, #player .progress .seek').css({width:'0%'});
+
 			var source = VKA.sources[VKA.duration[VKA.current.dur]][VKA.current.src];
 			var title = source.title;
 			var duration = source.dur;
 			var url = source.url;
 			var time = mkTime(duration);
 
+			$('#player .now-play .title').text(title);
+			$('#player .now-play .time').text(time);
 			//$('#player-source').attr('href',url).click();
 			$('#player .controls .play-btn').removeClass('play').addClass('pause');
 
@@ -55,6 +69,16 @@ var Muziq = new function() {
 		},
 
 		init: function() {
+			this.inited = true;
+			this.elem = new Audio("");
+			this.elem.id = "audio";
+			this.elem.src = "http://www.w3schools.com/html/horse.mp3";
+			this.elem.loop = "";
+			this.elem.volume = 1;
+			this.elem.load();
+			$('#player .controls').slideDown();
+			//this.elem.play();
+
 			$('#player .play-btn').click(function(){
 				if ($(this).hasClass('play')) {
 					$(this).removeClass('play').addClass('pause');
@@ -64,14 +88,49 @@ var Muziq = new function() {
 					Player.pause();
 				}
 			});
-			$('#player .next').click(function(){
-				$('#player li.playing').next().click();
+			$('#player .source').click(function(){
+				Player.next();
+			});
+			$('#player .progress .loaded').click(function(e){
+				var total = $(e.currentTarget).parent().width();
+				var current = e.offsetX;
+				var seekTo = parseInt((Player.duration/total)*current);
+				Player.elem.currentTime = seekTo;
+
+				console.log(seekTo);
 			});
 
-			this.elem = new Audio("");
-			this.elem.id = "audio";
-			this.elem.loop = "";
-			this.elem.volume = 1;
+			// bind audio events
+			this.elem.onprogress = function(e){
+				if (Player.loaded) return;
+				if (Player.duration !== 0) {
+					if (this.buffered.end(this.buffered.length-1) > Player.loading) {
+						Player.loading = this.buffered.end(this.buffered.length-1);
+						if ((Player.duration - Player.loading) < 1) {
+							Player.loaded = true;
+						}
+						if ((Player.loading/Player.duration - Player.progress) > 0.01) {
+							Player.progress = (Player.loading/Player.duration).toFixed(2);
+							$('#player .progress .loaded').css({width:Player.progress*100+'%'});
+						}
+					}
+				} 
+				
+			};
+			this.elem.ontimeupdate = function(e) {
+				$('#player .progress .seek').css({width: (this.currentTime / Player.duration)*100+'%'});
+			};
+			this.elem.onended = function(e){
+				$('#player li.playing').next().click();
+			};
+			this.elem.ondurationchange = function(e){
+				if (this.duration !== "NaN") {
+					Player.duration = this.duration;	
+				}
+			}
+
+
+
 		}
 
 	}
@@ -108,6 +167,9 @@ var Muziq = new function() {
 			}, 4000);
 
 			$('.track').live('click', function(){
+				if (Player.inited === false) {
+					Player.init();
+				}
 				$('.track.playing').removeClass('playing');
 				$(this).addClass('playing');
 				self.getFiles($(this));
@@ -195,6 +257,7 @@ var Muziq = new function() {
 		},
 
 		getArtists: function(q){
+			$('#home .start').slideUp();
 			$.mobile.loading('show');
 			$.getJSON(this.api+'method=artist.search&artist='+ q.enc() +'&callback=?', LastFm.onGetArtists);	
 		},
@@ -216,6 +279,7 @@ var Muziq = new function() {
 					<div class="info ellips">'+name+'</div></div>';
 			});
 			$('#artist-search').html(result);
+			$.mobile.silentScroll(100);
 			LastFm.initArtists();
 		},
 
@@ -279,7 +343,10 @@ var Muziq = new function() {
 				s.artist = $(this).attr('data-artist');
 				Discogs.findArtist(s.artist);
 			});
-			$.mobile.changePage('#similar');
+			if (Discogs.loaded === false) {
+				$.mobile.changePage('#similar');				
+			}
+
 		},
 
 		getTracks: function(mbid, artist) {  
@@ -327,8 +394,10 @@ var Muziq = new function() {
 		found: [],
 		artist: null,
 		artistUrl: null,
+		loaded: false,
 			
 		findArtist: function(q) {
+			this.loaded = false;
 			this.found = [];
 			this.artist = q;
 			this.artistUrl = null;
@@ -378,6 +447,7 @@ var Muziq = new function() {
 				e.preventDefault();
 			});
 			$.mobile.loading('hide');
+			Discogs.loaded = true;
 			$.mobile.changePage('#albums');
 		},
 
