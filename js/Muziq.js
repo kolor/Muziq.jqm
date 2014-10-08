@@ -75,9 +75,11 @@ var Muziq = new function() {
 			this.elem.loop = "";
 			this.elem.volume = 1;
 			this.elem.load();
+			var w = $('#player').width() - 100;
+			$('#player .controls .progress').css({width:w+'px'});
 			$('#player .controls').slideDown();
 			//this.elem.play();
-
+			
 			$('#player .play-btn').click(function(){
 				if ($(this).hasClass('play')) {
 					$(this).removeClass('play').addClass('pause');
@@ -91,7 +93,7 @@ var Muziq = new function() {
 				//$(this).css('-webkit-transform','rotate(0deg)'); 
 				//$(this).css('transform','rotate(0deg)');
 				$(this).css('border-spacing',0);
-				$(this).animate({borderSpacing: 360 },{
+				$(this).animate({borderSpacing: -360 },{
 				    step: function(now,fx) {
 				      $(this).css('-webkit-transform','rotate('+now+'deg)'); 
 				      $(this).css('transform','rotate('+now+'deg)');

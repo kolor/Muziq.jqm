@@ -38,8 +38,10 @@ ul.list a.ui-btn {font-size: 14px !important;}
 
 /* player controls */
 #player .controls {background: #444; overflow: hidden;}
-#player .controls div.btn {background-repeat: no-repeat; width: 32px; height: 32px;  margin: 7px;}
+#player .controls div.btn {background-repeat: no-repeat; width: 32px; height: 32px;  margin: 7px; cursor: pointer;
+	border: 1px solid #000; border-radius: 22px; box-shadow: 0 0 7px rgba(255,255,255,0.5);}
 /*#player .controls div.btn:active {background-color: rgb(128, 168, 190);}*/
+#player .controls div.btn:active {box-shadow:0 0 9px rgba(0, 155, 224, 0.9);}
 
 #player .play, #player .pause {float: left; margin-right: 9px;}
 #player .source {float: right; }
