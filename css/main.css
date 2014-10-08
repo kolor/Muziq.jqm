@@ -38,17 +38,16 @@ ul.list a.ui-btn {font-size: 14px !important;}
 
 /* player controls */
 #player .controls {background: #444; overflow: hidden;}
-#player .controls div.btn {border: 2px solid #202020; background-color: white; background-repeat: no-repeat; 
-	border-radius: 10px; width: 34px; height: 34px;  margin: 1%;}
-#player .controls div.btn:active {background-color: rgb(128, 168, 190);}
+#player .controls div.btn {background-repeat: no-repeat; width: 32px; height: 32px;  margin: 7px;}
+/*#player .controls div.btn:active {background-color: rgb(128, 168, 190);}*/
 
-#player .play, #player .pause {float: left;}
+#player .play, #player .pause {float: left; margin-right: 9px;}
 #player .source {float: right; }
 
-#player .play {background-image: url(../img/play.png); background-position: -4px -6px; margin-right: 2%; }
-#player .source {background-image: url(../img/refresh.png); background-position: 1px 1px; }
-#player .pause {background-image: url(../img/pause.png); background-position: -7px; }
-#player .next {background-image: url(../img/next.png); background-position: -6px -6px;}
+#player .play {background-image: url(../img/play.png);  }
+#player .source {background-image: url(../img/refresh.png);  }
+#player .pause {background-image: url(../img/pause.png);  }
+#player .next {background-image: url(../img/next.png);}
 
 #player li.playing a {background-color: #ddd !important;}
 
