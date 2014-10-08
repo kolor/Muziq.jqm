@@ -156,16 +156,16 @@ var Muziq = new function() {
 		audio: null,
 
 		init: function(){
-			var self = this;
+			var s = this;
 			VK.init({apiId:1902594, nameTransportPath: '/xd_receiver.html', status: true});
 			VK.Observer.subscribe('auth.login', function(response) {
 				console.log("VK response", response);
-				auth = true;
+				s.auth = true;
 			});    
 			VK.Api.call('audio.search', {q: 'spor', sort: 0, count: 10, offset: 0, v: 3, test_mode: 1}, function(r){
 				if (defined(r.error)) {
 					console.log("VK error occured", r.error);
-					auth = false;
+					s.auth = false;
 				}
 				$('.ui-input-search').fadeIn("slow");
 			});
@@ -180,7 +180,7 @@ var Muziq = new function() {
 				}
 				$('.track.playing').removeClass('playing');
 				$(this).addClass('playing');
-				self.getFiles($(this));
+				VKA.getFiles($(this));
 			});
 
 		},
