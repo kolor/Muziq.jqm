@@ -198,10 +198,16 @@ var Muziq = new function() {
 		onGetFiles: function(data) {
 			if (defined(data.error)) {
 				console.log("VK error: ", data.error);
+				error(data.error);
+				VKA.auth = false;
 				VK.Auth.login(null, VK.access.AUDIO);    
 				return;
 			}
 
+			if (!defined(data.response) || empty(data.response) || data.response[0] == 0) {
+				VKA.skip();
+				return;
+			}
 			var total = data.response[0];
 			var sort = new Array();
 			VKA.sources = [];
@@ -222,10 +228,18 @@ var Muziq = new function() {
 					dur: d.duration
 				});
 			}
+			if (empty(VKA.sources)) {
+				VKA.skip();
+				return;
+			}
 			$.mobile.loading('hide');
 			VKA.duration = arsort(sort, 'SORT_NUMERIC');
 			VKA.current = {src:0, dur:0};
 			Player.play();
+		},
+
+		skip: function(){
+			$('#player li.playing').addClass('missing').next().click();
 		},
 		
 		mkTitle: function(q) {
@@ -254,6 +268,7 @@ var Muziq = new function() {
 		title: null,
 		found : [],
 		image: null,
+		showing: false,
 	
 
 		init: function() {
@@ -284,7 +299,7 @@ var Muziq = new function() {
 				if (defined(this.image) && !empty(this.image[4]['#text'])) {
 					var img = this.image[4]['#text'];
 				} else {
-					var img = img2 = 'http://www.clipartbest.com/cliparts/aiq/eon/aiqeonykT.jpeg';
+					var img = img2 = 'http://i.imgur.com/1jdKzpw.png';
 				}
 				var name = this.name;
 				var url = this.url;
@@ -358,10 +373,15 @@ var Muziq = new function() {
 				});
 				Discogs.findArtist(s.artist);
 			});
-			if (Discogs.loaded === false) {
-				$.mobile.changePage('#similar');				
-			}
-
+			s.showing = true;
+			$.mobile.changePage('#similar');				
+			$.mobile.loading('show');
+			setTimeout(function(){
+				s.showing = false;
+				if (Discogs.loaded === true) {
+					$.mobile.changePage('#albums');	
+				}
+			}, 2000);
 		},
 
 		getTracks: function(mbid, artist) {  
@@ -411,29 +431,38 @@ var Muziq = new function() {
 		loaded: false,
 		album: null,
 			
-		findArtist: function(q) {
-			this.loaded = false;
-			this.found = [];
-			this.artist = q;
-			this.artistUrl = null;
-			$.getJSON(this.api+'database/search?type=artist&q='+q.enc()+'&callback=?', Discogs.onFindArtist);    
-		},
+	    
+	    findArtist: function(q) {
+	        this.found = [];
+	        this.artist = q;
+	        this.artistUrl = null;
+	        q = encodeURIComponent(q);
+	        $('.dc-albums').empty().addClass('load4');
+	        //$.getJSON(this.api+'database/search?type=artist&q='+q+'&callback=?', Discogs.onFindArtist);    
+	        $.get('dc.php?q='+q, Discogs.onFindArtist);
+	    },
 
-		onFindArtist: function(e) {
-			var data = e.data;
-			var s = Discogs;
-			$(data.results).each(function(){
-				if (lc(this.title).indexOf(lc(s.artist))>-1  &&   this.thumb !== "") {
-					s.artistUrl = this.resource_url;
-					return false;
-				}
-			});
-			if (s.artistUrl !== null) {
-				$.getJSON(s.artistUrl+'/releases?per_page=100&callback=?', Discogs.onGetReleases);    
-			} else {
-				$.getJSON(data.results[0].resource_url+'/releases?per_page=100&callback=?', Discogs.onGetReleases);    
-			}
-		},
+	    onFindArtist: function(html) {
+	            //var id = $(html).find('div.card').eq(0).data('object-id');
+	        var id = null;
+	        $(html).find('div.card').each(function(k,v){
+	           var img = $(v).find('.card_image img').attr('src');
+	           var txt = $(v).find('.card_body h4 a').text();
+	           if (img !== "http://s.pixogs.com/images/default-artist.png") {
+	                if (txt.indexOf(Discogs.artist) > -1) {
+	                    id = $(v).data('object-id');
+	                    return false;
+	                }
+	           }
+	        })
+	        
+	        if (defined(id)) {
+	            $.getJSON(Discogs.api+'artists/'+id+'/releases?per_page=100&callback=?', Discogs.onGetReleases);
+	        } else {
+	            $('.dc-albums').removeClass('load4');
+	        }
+	    },
+
 
 
 
@@ -468,9 +497,12 @@ var Muziq = new function() {
 				Discogs.getTracks(url);
 				e.preventDefault();
 			});
-			$.mobile.loading('hide');
 			Discogs.loaded = true;
-			$.mobile.changePage('#albums');
+			if (LastFm.showing === false) {
+				$.mobile.changePage('#albums');
+				$.mobile.loading('hide');
+			}
+			
 		},
 
 		getTracks: function(url){
