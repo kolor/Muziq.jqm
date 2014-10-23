@@ -2,4 +2,8 @@
 .fr {float: right;}
 .hide {display: none;}
 
+.w-33 {width: 33%;}
+
+.clr {overflow: hidden;}
+
 .ellips {white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}

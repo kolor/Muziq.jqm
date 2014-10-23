@@ -69,3 +69,8 @@ ul.list a.ui-btn {font-size: 14px !important;}
 #player .progress {float: left; width: 70%; height: 10px; background: none;}
 #player .loaded {background: #666; height: 10px; width: 0%;}
 #player .seek {background: #999; height: 10px; width: 0%;}
+
+
+
+/* playlist */
+#playlist li a {font-size: 14px; padding-left: 15px; font-family: Roboto Condensed;}
