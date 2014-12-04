@@ -9,6 +9,11 @@ function defined(obj) {
 	return true;
 }
 
+function error(msg) {
+    $('#error p').text(msg);
+    $('#error').popup().popup('open');
+}
+
 function empty(obj) {
 	if (obj === "") {
 		return true;

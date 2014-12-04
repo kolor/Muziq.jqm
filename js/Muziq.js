@@ -198,10 +198,16 @@ var Muziq = new function() {
 		onGetFiles: function(data) {
 			if (defined(data.error)) {
 				console.log("VK error: ", data.error);
+				error(data.error);
+				VKA.auth = false;
 				VK.Auth.login(null, VK.access.AUDIO);    
 				return;
 			}
 
+			if (!defined(data.response) || empty(data.response) || data.response[0] == 0) {
+				VKA.skip();
+				return;
+			}
 			var total = data.response[0];
 			var sort = new Array();
 			VKA.sources = [];
@@ -222,10 +228,18 @@ var Muziq = new function() {
 					dur: d.duration
 				});
 			}
+			if (empty(VKA.sources)) {
+				VKA.skip();
+				return;
+			}
 			$.mobile.loading('hide');
 			VKA.duration = arsort(sort, 'SORT_NUMERIC');
 			VKA.current = {src:0, dur:0};
 			Player.play();
+		},
+
+		skip: function(){
+			$('#player li.playing').addClass('missing').next().click();
 		},
 		
 		mkTitle: function(q) {
@@ -254,6 +268,7 @@ var Muziq = new function() {
 		title: null,
 		found : [],
 		image: null,
+		showing: false,
 	
 
 		init: function() {
@@ -284,7 +299,7 @@ var Muziq = new function() {
 				if (defined(this.image) && !empty(this.image[4]['#text'])) {
 					var img = this.image[4]['#text'];
 				} else {
-					var img = img2 = 'http://www.clipartbest.com/cliparts/aiq/eon/aiqeonykT.jpeg';
+					var img = img2 = 'http://i.imgur.com/1jdKzpw.png';
 				}
 				var name = this.name;
 				var url = this.url;
@@ -358,10 +373,15 @@ var Muziq = new function() {
 				});
 				Discogs.findArtist(s.artist);
 			});
-			if (Discogs.loaded === false) {
-				$.mobile.changePage('#similar');				
-			}
-
+			s.showing = true;
+			$.mobile.changePage('#similar');				
+			$.mobile.loading('show');
+			setTimeout(function(){
+				s.showing = false;
+				if (Discogs.loaded === true) {
+					$.mobile.changePage('#albums');	
+				}
+			}, 2000);
 		},
 
 		getTracks: function(mbid, artist) {  
@@ -468,9 +488,12 @@ var Muziq = new function() {
 				Discogs.getTracks(url);
 				e.preventDefault();
 			});
-			$.mobile.loading('hide');
 			Discogs.loaded = true;
-			$.mobile.changePage('#albums');
+			if (LastFm.showing === false) {
+				$.mobile.changePage('#albums');
+				$.mobile.loading('hide');
+			}
+			
 		},
 
 		getTracks: function(url){
