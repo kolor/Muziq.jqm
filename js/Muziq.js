@@ -94,10 +94,10 @@ var Muziq = new function() {
 				//$(this).css('transform','rotate(0deg)');
 				$(this).css('border-spacing',0);
 				$(this).animate({borderSpacing: -360 },{
-				    step: function(now,fx) {
-				      $(this).css('-webkit-transform','rotate('+now+'deg)'); 
-				      $(this).css('transform','rotate('+now+'deg)');
-				    }, duration:'slow'
+					step: function(now,fx) {
+					  $(this).css('-webkit-transform','rotate('+now+'deg)'); 
+					  $(this).css('transform','rotate('+now+'deg)');
+					}, duration:'slow'
 				},'linear');
 				Player.next();
 			});
@@ -192,9 +192,9 @@ var Muziq = new function() {
 			this.artist = t.attr('data-artist');
 			this.title = t.attr('data-title'); 
 			var q = this.artist+' '+this.title;
-	        VK.Api.call('audio.search', {q: q, sort: 2, count: 200, offset: 0}, VKA.onGetFiles);
+			VK.Api.call('audio.search', {q: q, sort: 2, count: 200, offset: 0}, VKA.onGetFiles);
 		},
-	    	
+			
 		onGetFiles: function(data) {
 			if (defined(data.error)) {
 				console.log("VK error: ", data.error);
@@ -269,19 +269,19 @@ var Muziq = new function() {
 		found : [],
 		image: null,
 		showing: false,
-	
+		tracksFor: null,
 
 		init: function() {
 			$('input#search').keyup(function(event){
-			    if (event.keyCode == '13') {
-			    	if (VKA.auth === false) {
-			    	    VK.Auth.login(null, VK.access.AUDIO);    
-			    	}
-			        var q = $('input#search').val();
-			        if (!empty(q)) {
-			            LastFm.getArtists(q);
-			        }
-			    }
+				if (event.keyCode == '13') {
+					if (VKA.auth === false) {
+						VK.Auth.login(null, VK.access.AUDIO);    
+					}
+					var q = $('input#search').val();
+					if (!empty(q)) {
+						LastFm.getArtists(q);
+					}
+				}
 			});
 		},
 
@@ -385,6 +385,7 @@ var Muziq = new function() {
 		},
 
 		getTracks: function(mbid, artist) {  
+			LastFm.tracksFor = artist;
 			$.mobile.loading('show');
 			if (defined(mbid)) {
 				$.getJSON(this.api+'method=artist.gettoptracks&mbid='+ mbid +'&limit=50&callback=?', LastFm.onGetTracks);    
@@ -406,15 +407,41 @@ var Muziq = new function() {
 					s.found.push(title);
 				}
 			});
-			$('#player ul.list').html(result).listview().listview('refresh');
-			$('#player #tracks-for').text("Top Tracks");
-			$.mobile.changePage('#player');
-			$.mobile.loading('hide');
+			if (empty(s.found)) {
+				$.get('lf.php?q='+LastFm.artist.enc(), LastFm.onGetCharts);
+			} else {
+				$('#player ul.list').html(result).listview().listview('refresh');	
+				$('#player #tracks-for').text(LastFm.artist +" Top");
+				$.mobile.changePage('#player');
+				$.mobile.loading('hide');
+			}
+			
+		},
+
+		onGetCharts: function(html) {
+			LastFm.found = [];
+			var result = '';
+			var div = $(html).find('div.module-body.chart.current');
+			div.find('table tr').each(function(k,v){
+				var title = LastFm.prettify($(v).find('td.subjectCell a').text());
+				if (!in_array(title, LastFm.found)) {
+					result += "<li class='track' data-artist='"+ LastFm.tracksFor +"' data-title='"+ title +"'>\
+						<a data-artist='"+ LastFm.tracksFor +"' data-title='"+ title +"'>"
+						+ cap(title) +"</a></li>";  
+					LastFm.found.push(title);
+				} 
+			});
+			if (LastFm.found.length > 0) {
+				$('#player ul.list').html(result).listview().listview('refresh');	
+				$('#player #tracks-for').text(LastFm.tracksFor +" Top");
+				$.mobile.changePage('#player');
+				$.mobile.loading('hide');
+			}
 		},
 
 		prettify: function(str) {
 			 str = trimBrackets(str);
-			 str = str.replace(/[\w]+ (remix|mix|rmx|edit).*/gi,''); // remove (this), 1 word before and everything after
+			 str = str.replace(/( remix| rmx| edit).*/gi,''); // remove (this), 1 word before and everything after
 			 str = str.replace(/( feat| ft\.| vocals by| vip).*/gi,''); // remove (this) and everything after
 			 str = str.replace(/(full version|remix|remi| mix|rmx| edit)/gi,''); //remove (this)
 			 str = str.replace(/(mp3|wav|flac|ogg)/gi,'');
@@ -431,29 +458,47 @@ var Muziq = new function() {
 		loaded: false,
 		album: null,
 			
+		
 		findArtist: function(q) {
-			this.loaded = false;
 			this.found = [];
 			this.artist = q;
 			this.artistUrl = null;
-			$.getJSON(this.api+'database/search?type=artist&q='+q.enc()+'&callback=?', Discogs.onFindArtist);    
+			q = encodeURIComponent(q);
+			$('.dc-albums').empty().addClass('load4');
+			//$.getJSON(this.api+'database/search?type=artist&q='+q+'&callback=?', Discogs.onFindArtist);    
+			$.get('dc.php?q='+q, Discogs.onFindArtist);
 		},
 
-		onFindArtist: function(e) {
-			var data = e.data;
-			var s = Discogs;
-			$(data.results).each(function(){
-				if (lc(this.title).indexOf(lc(s.artist))>-1  &&   this.thumb !== "") {
-					s.artistUrl = this.resource_url;
-					return false;
+		onFindArtist: function(html) {
+			var cards = $(html).find('div.card');
+			if (empty(cards)) {
+				$('.dc-albums').removeClass('load4');
+				return;
+			}
+			var id = null;
+			var next = null;
+			var first = $(html).find('div.card').eq(0).data('object-id');
+			cards.each(function(k,v){
+				var img = $(v).find('.card_image img').attr('src');
+				var txt = $(v).find('.card_body h4 a').text();
+				if (txt.lc().indexOf(Discogs.artist.lc()) > -1) {
+					if (img !== "http://s.pixogs.com/images/default-artist.png") {
+						id = $(v).data('object-id');
+						return false;     
+					} else {
+						next = $(v).data('object-id');
+					}
 				}
 			});
-			if (s.artistUrl !== null) {
-				$.getJSON(s.artistUrl+'/releases?per_page=100&callback=?', Discogs.onGetReleases);    
-			} else {
-				$.getJSON(data.results[0].resource_url+'/releases?per_page=100&callback=?', Discogs.onGetReleases);    
+			
+			if (!defined(id)) {
+				var id = defined(next) ? next : first;    
 			}
+
+			$.getJSON(Discogs.api+'artists/'+id+'/releases?per_page=100&callback=?', Discogs.onGetReleases);
+			
 		},
+
 
 
 
