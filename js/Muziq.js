@@ -482,11 +482,12 @@ var Muziq = new function() {
 				var img = $(v).find('.card_image img').attr('src');
 				var txt = $(v).find('.card_body h4 a').text();
 				if (txt.lc().indexOf(Discogs.artist.lc()) > -1) {
-					if (img !== "http://s.pixogs.com/images/default-artist.png") {
-						id = $(v).data('object-id');
-						return false;     
-					} else {
+					if (img === "http://static.discogs.com/images/default-artist.png" 
+					||  img === "http://s.pixogs.com/images/default-artist.png") {
 						next = $(v).data('object-id');
+					} else {
+						id = $(v).data('object-id');
+						return false;	
 					}
 				}
 			});
